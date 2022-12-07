@@ -8,7 +8,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
       </header>
-      <Viewer3d></Viewer3d>
+      <Viewer3d height="80vh"></Viewer3d>
     </div>
   );
 }
