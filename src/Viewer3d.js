@@ -2,6 +2,8 @@ import React, { Suspense } from "react";
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei'
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js';
+import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js';
+// import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js';
 
 export default function Viewer3d(props) {
     return (
@@ -22,10 +24,16 @@ export default function Viewer3d(props) {
 };
 
 function Scene() {
-    const obj = useLoader(OBJLoader, '/textured.obj')
+    const materials = useLoader(MTLLoader, "/textured.mtl");
+    const obj = useLoader(OBJLoader, '/textured.obj', loader => {
+        materials.preload();
+        loader.setMaterials(materials)
+    })
+    console.log('obj', obj)
+    // const obj = useLoader(FBXLoader, '/Dec7at2-22PM-poly.fbx')
     return (
         <Suspense fallback={null}>
-            <primitive object={obj} />
+            <primitive object={obj} scale={1.5} />
         </Suspense>
     )
 
