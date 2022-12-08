@@ -10,3 +10,24 @@
   height: 100vh;
   justify-content: center;
 }
+
+
+.uploadList {
+  width: 500px;
+  margin: 10px auto 0;
+}
+
+.item {
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+  padding: 3px;
+}
+
+.item.completed {
+  background: #a1f1a1;
+}
+.item.completed span::after {
+ content: ' ✓'
+}
+
