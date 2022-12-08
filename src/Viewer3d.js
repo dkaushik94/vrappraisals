@@ -2,6 +2,8 @@ import React, { useRef, Suspense } from "react";
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei'
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js';
+import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js';
+// import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js';
 
 import * as THREE from 'three'
 
@@ -15,7 +17,7 @@ export default function Viewer3d(props) {
 
         const mesh = new THREE.Mesh() // <mesh />
         const material = new THREE.MeshNormalMaterial() // <meshNormalMaterial />
-        const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5) // <boxGeometry />
+        const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2) // <boxGeometry />
         
         mesh.material = material
         mesh.geometry = geometry
@@ -26,10 +28,14 @@ export default function Viewer3d(props) {
     }
 
     const CarModel = () => {
-        const obj = useLoader(OBJLoader, '/textured.obj')
+        const materials = useLoader(MTLLoader, "/textured.mtl");
+        const obj = useLoader(OBJLoader, '/textured.obj', loader => {
+            materials.preload();
+            loader.setMaterials(materials)
+        })
         return (
             <group ref={ref} name="sceneWrapperGroup">
-                <mesh onClick={(e) => addMarker(e)}>
+                <mesh onDoubleClick={(e) => addMarker(e)}>
                     <Suspense fallback={null}>
                         <primitive object={obj} />
                     </Suspense>
