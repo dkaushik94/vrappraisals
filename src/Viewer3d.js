@@ -1,4 +1,4 @@
-import React, { useRef, Suspense } from "react";
+import React, { useRef, Suspense, useState, setState} from "react";
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei'
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js';
@@ -7,10 +7,54 @@ import { Card, PrimaryButton, ConnectedBulletList, ConnectedBullet } from '@snap
 
 import * as THREE from 'three'
 import '@snapsheet/uikit/dist/snapsheet-uikit.css';
+import { render } from "@testing-library/react";
+
+const BottomUI = (args) => {
+    return (
+        <div class='ss-container'>
+        <div id='bottom-ui' class='ss-row' >
+            <div class='ss-col-md'>
+                <Card>
+                    <h2>Description:</h2>
+                    <span>{args["description"]}</span>
+                </Card>
+            </div>
+            <div class='ss-col-md'>
+                <Card>
+                    <h2>Points of Interest:</h2>
+                    <ConnectedBulletList>
+                        { args["pointsOfInterest"].map( (interestStr) => {
+                            return(<ConnectedBullet>{interestStr}</ConnectedBullet>)
+                        })}
+                    </ConnectedBulletList>
+                </Card>
+            </div>
+            <div class='ss-col-md'>
+                <Card>
+                    <h2>Misc:</h2>
+                    <PrimaryButton>Save</PrimaryButton>
+                </Card>
+            </div>
+        </div>
+    </div>
+    )
+}
 
 export default function Viewer3d(props) {
+    const [pointsOfInterest, setPointsOfInterest] = useState([
+        "Broken Windshield", "Broken Side Window", "Broken Side Window"
+    ]);
+    const descr = "Car had wind and hail damage."
 
     const ref = useRef();
+
+    // useEffect( () => {
+    //     const materials = useLoader(MTLLoader, "/textured.mtl");
+    //     setCarObject( currentCarObj => useLoader(OBJLoader, '/textured.obj', loader => {
+    //         materials.preload();
+    //         loader.setMaterials(materials)
+    //     })
+    // }, [])
 
     const addMarker = (clickPos) => {
 
@@ -23,7 +67,7 @@ export default function Viewer3d(props) {
         
 
         mesh.position.set(clickPos.point.x, clickPos.point.y, clickPos.point.z);
-
+        setPointsOfInterest(currentPointsOfInterest => [...currentPointsOfInterest, "New Damange Thing"]);
         ref.current.add(mesh);
     }
 
@@ -58,34 +102,14 @@ export default function Viewer3d(props) {
                 </Canvas>
             </div>
             <h1>Claim ID: 011291222</h1>
-            <div class='ss-container'>
-                <div id='bottom-ui' class='ss-row' >
-                    <div class='ss-col-md'>
-                        <Card>
-                            <h2>Description:</h2>
-                            <span>Car had wind and hail damage.</span>
-                        </Card>
-                    </div>
-                    <div class='ss-col-md'>
-                        <Card>
-                            <h2>Points of Interest:</h2>
-                            <ConnectedBulletList>
-                                <ConnectedBullet>Broken Windshield</ConnectedBullet>
-                                <ConnectedBullet>Broken Side Window</ConnectedBullet>
-                                <ConnectedBullet>Broken Side Window</ConnectedBullet>
-                                <ConnectedBullet>Broken Side Window</ConnectedBullet>
-                                <ConnectedBullet>Melted Chassis Window</ConnectedBullet>
-                            </ConnectedBulletList>
-                        </Card>
-                    </div>
-                    <div class='ss-col-md'>
-                        <Card>
-                            <h2>Misc:</h2>
-                            <PrimaryButton>Save</PrimaryButton>
-                        </Card>
-                    </div>
-                </div>
-            </div>
+            { BottomUI(
+                {
+                    "pointsOfInterest": pointsOfInterest,
+                    "description": descr
+                }
+            ) }
         </div>
     );
 };
+
+
