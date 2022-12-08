@@ -7,10 +7,10 @@ import './dropZone.css';
 // installed using npm install buffer --save
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
-const fileTypes = ["JPG", "PNG", "GIF", "JPEG"];
+const fileTypes = ["JPG", "PNG", "GIF", "JPEG", "OBJ", "MTL"];
 
 const config = {
-  bucketName: 'vrappraisals',
+  bucketName: 'vrappraisals-demo-files',
   dirName: 'models',
   region: 'us-east-2',
   accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY,
