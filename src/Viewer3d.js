@@ -1,6 +1,6 @@
 import React, { useRef, Suspense, useState, setState} from "react";
 import { Canvas, useLoader } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei'
+import { Html, OrbitControls } from '@react-three/drei'
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js';
 import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js';
 import { Card, PrimaryButton, ConnectedBulletList, ConnectedBullet, Dialog, Textarea} from '@snapsheet/uikit';
@@ -96,15 +96,17 @@ export default function Viewer3d(props) {
     //     )
     // }
 
-    const CarModel = () => {
-        const materials = useLoader(MTLLoader, "/textured.mtl");
-        const obj = useLoader(OBJLoader, '/textured.obj', loader => {
+    const CarModel = (props) => {
+        const materials = useLoader(MTLLoader, `${props.baseUrl}/textured.mtl`);
+        const obj = useLoader(OBJLoader, `${props.baseUrl}/textured.obj`, loader => {
             materials.preload();
             loader.setMaterials(materials)
         })
+        // return <primitive object={obj} scale={1.5} />
 
-        return (
+        return obj && (
             <group ref={ref} name="sceneWrapperGroup">
+
                 <mesh onDoubleClick={(e) => showModal(e)}>
                     <Suspense fallback={null}>
                         <primitive object={obj} />
@@ -145,7 +147,9 @@ export default function Viewer3d(props) {
                     <ambientLight intensity={0.5} />
                     <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
                     <pointLight position={[-10, -10, -10]} />
-                    <CarModel />
+                    <Suspense fallback={<Html center><h2>Loading&nbsp;scans...</h2></Html>}>
+                        <CarModel baseUrl="https://vrappraisals-demo-files.s3-us-east-2.amazonaws.com/incidents/29383493" />
+                    </Suspense>
                     <OrbitControls />
                 </Canvas>
             </div>
