@@ -44,17 +44,11 @@ export default function Viewer3d(props) {
     const [pointsOfInterest, setPointsOfInterest] = useState([
         "Broken Windshield", "Broken Side Window", "Broken Side Window"
     ]);
+
+    const [markers, setMarkers] = useState([]);
     const descr = "Car had wind and hail damage."
 
     const ref = useRef();
-
-    // useEffect( () => {
-    //     const materials = useLoader(MTLLoader, "/textured.mtl");
-    //     setCarObject( currentCarObj => useLoader(OBJLoader, '/textured.obj', loader => {
-    //         materials.preload();
-    //         loader.setMaterials(materials)
-    //     })
-    // }, [])
 
     const addMarker = (clickPos) => {
 
@@ -64,12 +58,30 @@ export default function Viewer3d(props) {
         
         mesh.material = material
         mesh.geometry = geometry
+        console.log(ref)
         
+        let currMarker = {
+            position: clickPos,
+        }
 
         mesh.position.set(clickPos.point.x, clickPos.point.y, clickPos.point.z);
         setPointsOfInterest(currentPointsOfInterest => [...currentPointsOfInterest, "New Damange Thing"]);
+        setMarkers(currMark => [...currMark, currMarker]);
         ref.current.add(mesh);
     }
+
+    // const boxMarkers = (pos) => {
+    //     const ref = useRef();
+
+
+
+    //     return (
+    //         <mesh ref={ref} castShadow receiveShadow>
+    //             <boxGeometry attach="geometry" args={[2, 2, 2]} />
+    //             <meshStandardMaterial attach="material" />
+    //         </mesh>
+    //     )
+    // }
 
     const CarModel = () => {
         const materials = useLoader(MTLLoader, "/textured.mtl");
@@ -77,6 +89,7 @@ export default function Viewer3d(props) {
             materials.preload();
             loader.setMaterials(materials)
         })
+
         return (
             <group ref={ref} name="sceneWrapperGroup">
                 <mesh onDoubleClick={(e) => addMarker(e)}>
@@ -84,12 +97,22 @@ export default function Viewer3d(props) {
                         <primitive object={obj} />
                     </Suspense>
                 </mesh>
+                {
+                    markers.map((mark) => {
+                        return (
+                            <mesh position={new THREE.Vector3(mark.position.point.x, mark.position.point.y, mark.position.point.z)}>
+                                <meshNormalMaterial />
+                                <boxGeometry args={[0.2,0.2,0.2]} />
+                            </mesh>
+                        )
+                    })
+                }
             </group>
         )
     }
 
     return (
-        <div class=''>
+        <div>
             <div style={{
                 height: props.height || '500px'
             }}>
@@ -111,5 +134,3 @@ export default function Viewer3d(props) {
         </div>
     );
 };
-
-
