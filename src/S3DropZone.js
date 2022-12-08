@@ -11,7 +11,6 @@ const fileTypes = ["JPG", "PNG", "GIF", "JPEG", "OBJ", "MTL"];
 
 const config = {
   bucketName: 'vrappraisals-demo-files',
-  dirName: 'models',
   region: 'us-east-2',
   accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY,
   secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
@@ -21,7 +20,6 @@ const S3DropZone = () =>{
   const [file, setFile] = useState(null);
 
   const handleChange = (file) => {
-    console.log(file);
     setFile(file);
   };
 
