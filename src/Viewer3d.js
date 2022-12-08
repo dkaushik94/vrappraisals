@@ -16,16 +16,16 @@ export default function Viewer3d(props) {
                 <pointLight position={[-10, -10, -10]} />
                 {/*<Box position={[-1.2, 0, 0]} />*/}
                 {/*<Box position={[1.2, 0, 0]} />*/}
-                <Scene />
+                <Scene baseUrl="https://vrappraisals-demo-files.s3-us-east-2.amazonaws.com/incidents/29383493" />
                 <OrbitControls />
             </Canvas>
         </div>
     );
 };
 
-function Scene() {
-    const materials = useLoader(MTLLoader, "/textured.mtl");
-    const obj = useLoader(OBJLoader, '/textured.obj', loader => {
+function Scene(props) {
+    const materials = useLoader(MTLLoader, `${props.baseUrl}/textured.mtl`);
+    const obj = useLoader(OBJLoader, `${props.baseUrl}/textured.obj`, loader => {
         materials.preload();
         loader.setMaterials(materials)
     })
