@@ -3,11 +3,12 @@ import { Canvas, useLoader } from '@react-three/fiber';
 import { Html, OrbitControls } from '@react-three/drei'
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js';
 import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js';
-import { Card, PrimaryButton, ConnectedBulletList, ConnectedBullet } from '@snapsheet/uikit';
+import { Card, PrimaryButton, ConnectedBulletList, ConnectedBullet, Dialog, Textarea} from '@snapsheet/uikit';
 
 import * as THREE from 'three'
 import '@snapsheet/uikit/dist/snapsheet-uikit.css';
 import { render } from "@testing-library/react";
+import { click } from "@testing-library/user-event/dist/click";
 
 const BottomUI = (args) => {
     return (
@@ -40,7 +41,12 @@ const BottomUI = (args) => {
     )
 }
 
+
+
 export default function Viewer3d(props) {
+    const [modalVisibility, setModalVisibility] = useState(false);
+    const [clickPos, setClickPos] = useState(null)
+    const [newPointOfInterestName, setNewPointOfInterestName] = useState("undefined")
     const [pointsOfInterest, setPointsOfInterest] = useState([
         "Broken Windshield", "Broken Side Window", "Broken Side Window"
     ]);
@@ -50,24 +56,31 @@ export default function Viewer3d(props) {
 
     const ref = useRef();
 
-    const addMarker = (clickPos) => {
+    const showModal = (clickPos) => {
+        setClickPos(clickPos)
+        setModalVisibility(true)  
+    }
 
+    const addMarker = () => {
+        
         const mesh = new THREE.Mesh()
         const material = new THREE.MeshNormalMaterial()
         const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2)
         
         mesh.material = material
         mesh.geometry = geometry
-        console.log(ref)
         
         let currMarker = {
             position: clickPos,
         }
 
         mesh.position.set(clickPos.point.x, clickPos.point.y, clickPos.point.z);
-        setPointsOfInterest(currentPointsOfInterest => [...currentPointsOfInterest, "New Damange Thing"]);
+        console.log(newPointOfInterestName)
+        setPointsOfInterest(currentPointsOfInterest => [...currentPointsOfInterest, newPointOfInterestName]);
         setMarkers(currMark => [...currMark, currMarker]);
         ref.current.add(mesh);
+        setModalVisibility(false) 
+        setClickPos(null)
     }
 
     // const boxMarkers = (pos) => {
@@ -93,8 +106,11 @@ export default function Viewer3d(props) {
 
         return obj && (
             <group ref={ref} name="sceneWrapperGroup">
-                <mesh onDoubleClick={(e) => addMarker(e)}>
-                    <primitive object={obj} />
+
+                <mesh onDoubleClick={(e) => showModal(e)}>
+                    <Suspense fallback={null}>
+                        <primitive object={obj} />
+                    </Suspense>
                 </mesh>
                 {
                     markers.map((mark) => {
@@ -112,6 +128,18 @@ export default function Viewer3d(props) {
 
     return (
         <div>
+            <Dialog id='pointOfInterestModal' show={modalVisibility} style={{"padding": '25px;'}}>
+                <h2>New Point of Interest</h2>
+                <span>Enter label/name:</span>
+                <Textarea onChange={ (e) => { setNewPointOfInterestName(e.target.value)} }>
+                </Textarea>
+                <PrimaryButton onClick={ ()=> { setModalVisibility(false)}} >
+                    Cancel
+                </PrimaryButton>
+                <PrimaryButton onClick={ ()=> { addMarker() }}>
+                    OK
+                </PrimaryButton>
+            </Dialog>
             <div style={{
                 height: props.height || '500px'
             }}>
