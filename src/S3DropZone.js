@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useRef, useState} from "react";
 import { FileUploader } from "react-drag-drop-files";
 import S3 from 'react-aws-s3';
 
@@ -9,19 +9,16 @@ window.Buffer = window.Buffer || require("buffer").Buffer;
 
 const fileTypes = ["JPG", "PNG", "GIF", "JPEG", "OBJ", "MTL"];
 
-const config = {
-  bucketName: 'vrappraisals-demo-files',
-  dirName: 'incidents/29383493',
-  region: 'us-east-2',
-  accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY,
-  secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
-}
+
 
 const S3DropZone = () =>{
   const [startedUpload, setStartedUpload] = useState(false);
   const [objFile, setObjFile] = useState(null);
   const [mtlFile, setMtlFile] = useState(null);
   const [jpgFile, setJpgFile] = useState(null);
+
+  const incidentNumRef = useRef(null);
+  const [incidentId, setIncidentId] = useState(null);
 
   const handleChange = (change) => {
     console.log(change);
@@ -49,12 +46,23 @@ const S3DropZone = () =>{
   }
 
   const uploadFileToS3 = async (file) => {
+    if (!incidentId) {
+      alert('No incident # selected!');
+      return;
+    }
     if(!file) {
       alert('No file Selected'); // Put a toast here instead later.
       return;
     }
     setStartedUpload(true);
 
+    const config = {
+      bucketName: 'vrappraisals-demo-files',
+      dirName: 'incidents/' + incidentId,
+      region: 'us-east-2',
+      accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY,
+      secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
+    }
     const s3Client = new S3(config);
     return s3Client.uploadFile(file, file.name)
       .then(data => {
@@ -76,8 +84,7 @@ const S3DropZone = () =>{
         <progress value={ file.uploadCompleted ? 100 : null}></progress>
       </div>
   )
-  return (
-    <div className='body'>
+  const uploadSection = (<>
       <div className = 'dropZoneParent'>
         <FileUploader handleChange={handleChange} multiple={true} name="file" types={fileTypes} />
       </div>
@@ -91,6 +98,30 @@ const S3DropZone = () =>{
         <h4>Uploading...</h4>
         <p>Please be patient as this can take several minutes</p>
       </>)}
+  </>);
+
+  const handleIncidentChange = () => {
+    setIncidentId(incidentNumRef.current.value);
+    return false;
+  };
+  const incidentSection = <>
+    <form onSubmit={handleIncidentChange}>
+      <div style={{marginBottom: 8}}>
+        <label htmlFor={'incident-id'} style={{display: "block"}}>Please enter the incident number to which these scans apply.</label>
+        <input className={'form-control col-md-6'} type='text' id='incident-id' placeholder='e.g. 1232131' ref={incidentNumRef} />
+      </div>
+
+      <input className={'btn btn-primary'} type={'submit'} value={'Submit'} />
+    </form>
+  </>;
+
+  return (
+    <div className='body container'>
+      <h1>Upload incident details</h1>
+      <p>You will need to provide 3 files. There will be a <code>.obj</code>, a <code>.mtl</code>, and a <code>.jpg</code> file.</p>
+      <p>Drag these files onto the space below and they will automatically start uploading.</p>
+      {!incidentId && incidentSection}
+      {incidentId && uploadSection}
     </div>
   );
 }
