@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import { Canvas, useLoader } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei'
+import { Html, OrbitControls } from '@react-three/drei'
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js';
 import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js';
 // import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js';
@@ -16,7 +16,9 @@ export default function Viewer3d(props) {
                 <pointLight position={[-10, -10, -10]} />
                 {/*<Box position={[-1.2, 0, 0]} />*/}
                 {/*<Box position={[1.2, 0, 0]} />*/}
-                <Scene baseUrl="https://vrappraisals-demo-files.s3-us-east-2.amazonaws.com/incidents/29383493" />
+                <Suspense fallback={<Html center><h2>Loading&nbsp;scans...</h2></Html>}>
+                    <Scene baseUrl="https://vrappraisals-demo-files.s3-us-east-2.amazonaws.com/incidents/29383493" />
+                </Suspense>
                 <OrbitControls />
             </Canvas>
         </div>
@@ -29,12 +31,6 @@ function Scene(props) {
         materials.preload();
         loader.setMaterials(materials)
     })
-    console.log('obj', obj)
-    // const obj = useLoader(FBXLoader, '/Dec7at2-22PM-poly.fbx')
-    return (
-        <Suspense fallback={null}>
-            <primitive object={obj} scale={1.5} />
-        </Suspense>
-    )
+    return <primitive object={obj} scale={1.5} />
 
 }
