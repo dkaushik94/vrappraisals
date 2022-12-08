@@ -12,12 +12,10 @@ export default function Viewer3d(props) {
     const ref = useRef();
 
     const addMarker = (clickPos) => {
-        
-        console.log(clickPos);
 
-        const mesh = new THREE.Mesh() // <mesh />
-        const material = new THREE.MeshNormalMaterial() // <meshNormalMaterial />
-        const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2) // <boxGeometry />
+        const mesh = new THREE.Mesh()
+        const material = new THREE.MeshNormalMaterial()
+        const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2)
         
         mesh.material = material
         mesh.geometry = geometry
@@ -52,8 +50,6 @@ export default function Viewer3d(props) {
                 <ambientLight intensity={0.5} />
                 <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
                 <pointLight position={[-10, -10, -10]} />
-                {/*<Box position={[-1.2, 0, 0]} />*/}
-                {/*<Box position={[1.2, 0, 0]} />*/}
                 <CarModel />
                 <OrbitControls />
             </Canvas>
