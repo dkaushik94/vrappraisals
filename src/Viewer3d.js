@@ -12,25 +12,25 @@ import { click } from "@testing-library/user-event/dist/click";
 
 const BottomUI = (args) => {
     return (
-        <div class='ss-container'>
-        <div id='bottom-ui' class='ss-row' >
-            <div class='ss-col-md'>
+        <div className='ss-container'>
+        <div id='bottom-ui' className='ss-row' >
+            <div className='ss-col-md'>
                 <Card>
                     <h2>Description:</h2>
                     <span>{args["description"]}</span>
                 </Card>
             </div>
-            <div class='ss-col-md'>
+            <div className='ss-col-md'>
                 <Card>
                     <h2>Points of Interest:</h2>
                     <ConnectedBulletList>
-                        { args["pointsOfInterest"].map( (interestStr) => {
-                            return(<ConnectedBullet>{interestStr}</ConnectedBullet>)
+                        { args["pointsOfInterest"].map( (interestStr, idx) => {
+                            return(<ConnectedBullet key={idx}>{interestStr}</ConnectedBullet>)
                         })}
                     </ConnectedBulletList>
                 </Card>
             </div>
-            <div class='ss-col-md'>
+            <div className='ss-col-md'>
                 <Card>
                     <h2>Misc:</h2>
                     <PrimaryButton>Save</PrimaryButton>
@@ -113,7 +113,7 @@ export default function Viewer3d(props) {
                 {
                     markers.map((mark) => {
                         return (
-                            <mesh position={new THREE.Vector3(mark.position.point.x, mark.position.point.y, mark.position.point.z)}>
+                            <mesh key={`${mark.position.point.x}-${mark.position.point.y}-${mark.position.point.z}`} position={new THREE.Vector3(mark.position.point.x, mark.position.point.y, mark.position.point.z)}>
                                 <meshNormalMaterial />
                                 <boxGeometry args={[0.2,0.2,0.2]} />
                             </mesh>
