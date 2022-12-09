@@ -1,14 +1,13 @@
-import React, {useRef, Suspense, useState, setState, useEffect} from "react";
+import React, {useRef, Suspense, useState} from "react";
 import { Canvas, useLoader } from '@react-three/fiber';
 import { Html, OrbitControls } from '@react-three/drei'
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js';
 import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js';
-import { Card, PrimaryButton, ConnectedBulletList, ConnectedBullet } from '@snapsheet/uikit';
+import { Card, PrimaryButton, ConnectedBulletList, ConnectedBullet, Dialog, Textarea} from '@snapsheet/uikit';
 
 import * as THREE from 'three'
 import '@snapsheet/uikit/dist/snapsheet-uikit.css';
-import { render } from "@testing-library/react";
-import {S3Client, ListObjectsCommand} from '@aws-sdk/client-s3';
+import './Viewer3d.css';
 import {useParams} from "react-router-dom";
 
 const BottomUI = (args) => {
@@ -43,6 +42,9 @@ const BottomUI = (args) => {
 }
 
 export default function Viewer3d(props) {
+    const [modalVisibility, setModalVisibility] = useState(false);
+    const [clickPos, setClickPos] = useState(null)
+    const [newPointOfInterestName, setNewPointOfInterestName] = useState("undefined")
     const [pointsOfInterest, setPointsOfInterest] = useState([
         "Broken Windshield", "Broken Side Window", "Broken Side Window"
     ]);
@@ -54,13 +56,18 @@ export default function Viewer3d(props) {
 
     const ref = useRef();
 
-    const addMarker = (clickPos) => {
+    const showModal = (position) => {
+        setClickPos(position)
+        setModalVisibility(true)
+    }
+
+    const addMarker = () => {
 
         const mesh = new THREE.Mesh()
         const material = new THREE.MeshNormalMaterial()
         const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2)
         
-        mesh.material = material
+        mesh.material = material;
         mesh.geometry = geometry
         console.log(ref)
         
@@ -69,9 +76,12 @@ export default function Viewer3d(props) {
         }
 
         mesh.position.set(clickPos.point.x, clickPos.point.y, clickPos.point.z);
-        setPointsOfInterest(currentPointsOfInterest => [...currentPointsOfInterest, "New Damange Thing"]);
+        console.log(newPointOfInterestName)
+        setPointsOfInterest(currentPointsOfInterest => [...currentPointsOfInterest, newPointOfInterestName]);
         setMarkers(currMark => [...currMark, currMarker]);
         ref.current.add(mesh);
+        setModalVisibility(false)
+        setClickPos(null)
     }
 
     // const boxMarkers = (pos) => {
@@ -97,7 +107,7 @@ export default function Viewer3d(props) {
 
         return obj && (
             <group ref={ref} name="sceneWrapperGroup">
-                <mesh onDoubleClick={(e) => addMarker(e)}>
+                <mesh onDoubleClick={(e) => showModal(e)}>
                     <primitive object={obj} />
                 </mesh>
                 {
@@ -116,6 +126,21 @@ export default function Viewer3d(props) {
 
     return (
         <div>
+            <Dialog id='pointOfInterestModal' show={modalVisibility} >
+                <div className="modal-wrapper">
+                    <h2>New Point of Interest</h2>
+                    <label htmlFor={'poi-text'}>Enter label/name:</label>
+                    <Textarea id={'poi-text'} onChange={ (e) => { setNewPointOfInterestName(e.target.value)} }></Textarea>
+                    <div className={'bottom-buttons'}>
+                        <PrimaryButton onClick={ ()=> { setModalVisibility(false)}} >
+                            Cancel
+                        </PrimaryButton>
+                        <PrimaryButton onClick={ ()=> { addMarker() }}>
+                            OK
+                        </PrimaryButton>
+                    </div>
+                </div>
+            </Dialog>
             <div style={{
                 height: props.height || '500px'
             }}>
@@ -129,7 +154,7 @@ export default function Viewer3d(props) {
                     <OrbitControls />
                 </Canvas>
             </div>
-            <h1>Claim ID: 011291222</h1>
+            <h1>Claim ID: {incidentId}</h1>
             { BottomUI(
                 {
                     "pointsOfInterest": pointsOfInterest,
