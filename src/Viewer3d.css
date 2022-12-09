@@ -1,0 +1,15 @@
+.modal-wrapper {
+    padding: 25px;
+}
+.bottom-buttons {
+    margin-top: 7px;
+}
+label[for="poi-text"] {
+    display: block;
+    font-weight: bold;
+}
+
+#poi-text {
+    display: block;
+    width: 100%;
+}

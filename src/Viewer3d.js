@@ -7,6 +7,7 @@ import { Card, PrimaryButton, ConnectedBulletList, ConnectedBullet, Dialog, Text
 
 import * as THREE from 'three'
 import '@snapsheet/uikit/dist/snapsheet-uikit.css';
+import './Viewer3d.css';
 import { render } from "@testing-library/react";
 import { click } from "@testing-library/user-event/dist/click";
 
@@ -128,17 +129,20 @@ export default function Viewer3d(props) {
 
     return (
         <div>
-            <Dialog id='pointOfInterestModal' show={modalVisibility} style={{"padding": '25px;'}}>
-                <h2>New Point of Interest</h2>
-                <span>Enter label/name:</span>
-                <Textarea onChange={ (e) => { setNewPointOfInterestName(e.target.value)} }>
-                </Textarea>
-                <PrimaryButton onClick={ ()=> { setModalVisibility(false)}} >
-                    Cancel
-                </PrimaryButton>
-                <PrimaryButton onClick={ ()=> { addMarker() }}>
-                    OK
-                </PrimaryButton>
+            <Dialog id='pointOfInterestModal' show={modalVisibility} >
+                <div className="modal-wrapper">
+                    <h2>New Point of Interest</h2>
+                    <label htmlFor={'poi-text'}>Enter label/name:</label>
+                    <Textarea id={'poi-text'} onChange={ (e) => { setNewPointOfInterestName(e.target.value)} }></Textarea>
+                    <div className={'bottom-buttons'}>
+                        <PrimaryButton onClick={ ()=> { setModalVisibility(false)}} >
+                            Cancel
+                        </PrimaryButton>
+                        <PrimaryButton onClick={ ()=> { addMarker() }}>
+                            OK
+                        </PrimaryButton>
+                    </div>
+                </div>
             </Dialog>
             <div style={{
                 height: props.height || '500px'
